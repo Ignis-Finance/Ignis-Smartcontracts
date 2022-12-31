@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisFlr.sol";
 
@@ -37,10 +37,10 @@ contract Maximillion {
         uint received = msg.value;
         uint borrows = ignisFlr_.borrowBalanceCurrent(borrower);
         if (received > borrows) {
-            ignisFlr_.repayBorrowBehalf.value(borrows)(borrower);
-            msg.sender.transfer(received - borrows);
+            ignisFlr_.repayBorrowBehalf{value:borrows}(borrower);
+            payable(msg.sender).transfer(received - borrows);
         } else {
-            ignisFlr_.repayBorrowBehalf.value(received)(borrower);
+            ignisFlr_.repayBorrowBehalf{value:received}(borrower);
         }
     }
 }

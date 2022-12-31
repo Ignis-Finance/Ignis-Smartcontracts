@@ -1,0 +1,15 @@
+[
+  "constructor()",
+  "event FeedSet(address,string)",
+  "event NewAdmin(address,address)",
+  "event PricePosted(address,uint256,uint256,uint256)",
+  "function admin() view returns (address)",
+  "function assetPrices(address) view returns (uint256)",
+  "function getFeed(string) view returns (address)",
+  "function getUnderlyingPrice(address) view returns (uint256)",
+  "function isPriceOracle() view returns (bool)",
+  "function setAdmin(address)",
+  "function setDirectPrice(address,uint256)",
+  "function setFeed(string,address)",
+  "function setUnderlyingPrice(address,uint256)"
+]

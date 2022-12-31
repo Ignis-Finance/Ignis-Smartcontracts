@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisToken.sol";
 
@@ -25,7 +25,7 @@ contract IgnisFlr is IgnisToken {
                 uint8 decimals_,
                 address payable admin_) public {
         // Creator of the contract is admin during initialization
-        admin = msg.sender;
+        admin = payable(msg.sender);
 
         initialize(comptroller_, interestRateModel_, initialExchangeRateMantissa_, name_, symbol_, decimals_);
 
@@ -116,7 +116,7 @@ contract IgnisFlr is IgnisToken {
     /**
      * @notice Send Flr to IgnisFlr to mint
      */
-    function () external payable {
+    receive() external payable {
         (uint err,) = mintInternal(msg.value);
         requireNoError(err, "mint failed");
     }
@@ -128,7 +128,7 @@ contract IgnisFlr is IgnisToken {
      * @dev This excludes the value of the current message, if any
      * @return The quantity of Flr owned by this contract
      */
-    function getCashPrior() internal view returns (uint) {
+    function getCashPrior() override internal view returns (uint) {
         (MathError err, uint startingBalance) = subUInt(address(this).balance, msg.value);
         require(err == MathError.NO_ERROR);
         return startingBalance;
@@ -140,14 +140,14 @@ contract IgnisFlr is IgnisToken {
      * @param amount Amount of Flr being sent
      * @return The actual amount of Flr transferred
      */
-    function doTransferIn(address from, uint amount) internal returns (uint) {
+    function doTransferIn(address from, uint amount) override internal returns (uint) {
         // Sanity checks
         require(msg.sender == from, "sender mismatch");
         require(msg.value == amount, "value mismatch");
         return amount;
     }
 
-    function doTransferOut(address payable to, uint amount) internal {
+    function doTransferOut(address payable to, uint amount) override internal {
         /* Send the Flr, with minimal gas and revert on failure */
         to.transfer(amount);
     }
@@ -164,11 +164,11 @@ contract IgnisFlr is IgnisToken {
             fullMessage[i] = bytes(message)[i];
         }
 
-        fullMessage[i+0] = byte(uint8(32));
-        fullMessage[i+1] = byte(uint8(40));
-        fullMessage[i+2] = byte(uint8(48 + ( errCode / 10 )));
-        fullMessage[i+3] = byte(uint8(48 + ( errCode % 10 )));
-        fullMessage[i+4] = byte(uint8(41));
+        fullMessage[i+0] = bytes1(uint8(32));
+        fullMessage[i+1] = bytes1(uint8(40));
+        fullMessage[i+2] = bytes1(uint8(48 + ( errCode / 10 )));
+        fullMessage[i+3] = bytes1(uint8(48 + ( errCode % 10 )));
+        fullMessage[i+4] = bytes1(uint8(41));
 
         require(errCode == uint(Error.NO_ERROR), string(fullMessage));
     }

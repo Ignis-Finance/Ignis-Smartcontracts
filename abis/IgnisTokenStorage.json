@@ -1,0 +1,16 @@
+[
+  "function accrualBlockTimestamp() view returns (uint256)",
+  "function admin() view returns (address)",
+  "function borrowIndex() view returns (uint256)",
+  "function comptroller() view returns (address)",
+  "function decimals() view returns (uint8)",
+  "function interestRateModel() view returns (address)",
+  "function name() view returns (string)",
+  "function pendingAdmin() view returns (address)",
+  "function protocolSeizeShareMantissa() view returns (uint256)",
+  "function reserveFactorMantissa() view returns (uint256)",
+  "function symbol() view returns (string)",
+  "function totalBorrows() view returns (uint256)",
+  "function totalReserves() view returns (uint256)",
+  "function totalSupply() view returns (uint256)"
+]

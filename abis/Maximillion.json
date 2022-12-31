@@ -1,0 +1,6 @@
+[
+  "constructor(address)",
+  "function ignisFlr() view returns (address)",
+  "function repayBehalf(address) payable",
+  "function repayBehalfExplicit(address,address) payable"
+]

@@ -1,18 +1,20 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  // Hardhat always runs the compile task when running scripts with its command
+  // line interface.
+  //
+  // If this script is run directly using `node` you may want to call compile
+  // manually to make sure everything is compiled
+  // await hre.run('compile');
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  // We get the contract to deploy
+  const Ignis = await ethers.getContractFactory("Ignis");
+  const contract = await Ignis.deploy();
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  await contract.deployed();
 
-  await lock.deployed();
-
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  console.log("Ignis deployed to:", contract.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

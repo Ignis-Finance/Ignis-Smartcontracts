@@ -1,0 +1,16 @@
+[
+  "constructor()",
+  "event Failure(uint256,uint256,uint256)",
+  "event NewAdmin(address,address)",
+  "event NewImplementation(address,address)",
+  "event NewPendingAdmin(address,address)",
+  "event NewPendingImplementation(address,address)",
+  "function _acceptAdmin() returns (uint256)",
+  "function _acceptImplementation() returns (uint256)",
+  "function _setPendingAdmin(address) returns (uint256)",
+  "function _setPendingImplementation(address) returns (uint256)",
+  "function admin() view returns (address)",
+  "function comptrollerImplementation() view returns (address)",
+  "function pendingAdmin() view returns (address)",
+  "function pendingComptrollerImplementation() view returns (address)"
+]

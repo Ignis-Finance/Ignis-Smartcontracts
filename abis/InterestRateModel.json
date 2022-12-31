@@ -1,0 +1,5 @@
+[
+  "function getBorrowRate(uint256,uint256,uint256) view returns (uint256)",
+  "function getSupplyRate(uint256,uint256,uint256,uint256) view returns (uint256)",
+  "function isInterestRateModel() view returns (bool)"
+]

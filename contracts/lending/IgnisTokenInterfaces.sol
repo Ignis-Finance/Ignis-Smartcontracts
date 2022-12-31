@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./ComptrollerInterface.sol";
 import "./InterestRateModel.sol";
@@ -123,7 +123,7 @@ contract IgnisTokenStorage {
 
 }
 
-contract IgnisTokenInterface is IgnisTokenStorage {
+abstract contract IgnisTokenInterface is IgnisTokenStorage {
     /**
      * @notice Indicator that this is a IgnisToken contract (for inspection)
      */
@@ -215,42 +215,42 @@ contract IgnisTokenInterface is IgnisTokenStorage {
      */
     event Approval(address indexed owner, address indexed spender, uint amount);
 
-    /**
-     * @notice Failure event
-     */
-    event Failure(uint error, uint info, uint detail);
+    // /**
+    //  * @notice Failure event
+    //  */
+    // event Failure(uint error, uint info, uint detail);
 
 
     /*** User Interface ***/
 
-    function transfer(address dst, uint amount) external returns (bool);
-    function transferFrom(address src, address dst, uint amount) external returns (bool);
-    function approve(address spender, uint amount) external returns (bool);
-    function allowance(address owner, address spender) external view returns (uint);
-    function balanceOf(address owner) external view returns (uint);
-    function balanceOfUnderlying(address owner) external returns (uint);
-    function getAccountSnapshot(address account) external view returns (uint, uint, uint, uint);
-    function borrowRatePerTimestamp() external view returns (uint);
-    function supplyRatePerTimestamp() external view returns (uint);
-    function totalBorrowsCurrent() external returns (uint);
-    function borrowBalanceCurrent(address account) external returns (uint);
-    function borrowBalanceStored(address account) public view returns (uint);
-    function exchangeRateCurrent() public returns (uint);
-    function exchangeRateStored() public view returns (uint);
-    function getCash() external view returns (uint);
-    function accrueInterest() public returns (uint);
-    function seize(address liquidator, address borrower, uint seizeTokens) external returns (uint);
+    function transfer(address dst, uint amount) virtual external returns (bool);
+    function transferFrom(address src, address dst, uint amount) virtual external returns (bool);
+    function approve(address spender, uint amount) virtual external returns (bool);
+    function allowance(address owner, address spender) virtual external view returns (uint);
+    function balanceOf(address owner) virtual external view returns (uint);
+    function balanceOfUnderlying(address owner) virtual external returns (uint);
+    function getAccountSnapshot(address account) virtual external view returns (uint, uint, uint, uint);
+    function borrowRatePerTimestamp() virtual external view returns (uint);
+    function supplyRatePerTimestamp() virtual external view returns (uint);
+    function totalBorrowsCurrent() virtual external returns (uint);
+    function borrowBalanceCurrent(address account) virtual external returns (uint);
+    function borrowBalanceStored(address account) virtual public view returns (uint);
+    function exchangeRateCurrent() virtual public returns (uint);
+    function exchangeRateStored() virtual public view returns (uint);
+    function getCash() virtual external view returns (uint);
+    function accrueInterest() virtual public returns (uint);
+    function seize(address liquidator, address borrower, uint seizeTokens) virtual external returns (uint);
 
 
     /*** Admin Functions ***/
 
-    function _setPendingAdmin(address payable newPendingAdmin) external returns (uint);
-    function _acceptAdmin() external returns (uint);
-    function _setComptroller(ComptrollerInterface newComptroller) public returns (uint);
-    function _setReserveFactor(uint newReserveFactorMantissa) external returns (uint);
-    function _reduceReserves(uint reduceAmount) external returns (uint);
-    function _setInterestRateModel(InterestRateModel newInterestRateModel) public returns (uint);
-    function _setProtocolSeizeShare(uint newProtocolSeizeShareMantissa) external returns (uint);
+    function _setPendingAdmin(address payable newPendingAdmin) virtual external returns (uint);
+    function _acceptAdmin() virtual external returns (uint);
+    function _setComptroller(ComptrollerInterface newComptroller) virtual public returns (uint);
+    function _setReserveFactor(uint newReserveFactorMantissa) virtual external returns (uint);
+    function _reduceReserves(uint reduceAmount) virtual external returns (uint);
+    function _setInterestRateModel(InterestRateModel newInterestRateModel) virtual public returns (uint);
+    function _setProtocolSeizeShare(uint newProtocolSeizeShareMantissa) virtual external returns (uint);
 }
 
 contract IgnisErc20Storage {
@@ -260,23 +260,23 @@ contract IgnisErc20Storage {
     address public underlying;
 }
 
-contract IgnisErc20Interface is IgnisErc20Storage {
+abstract contract IgnisErc20Interface is IgnisErc20Storage {
 
     /*** User Interface ***/
 
-    function mint(uint mintAmount) external returns (uint);
-    function redeem(uint redeemTokens) external returns (uint);
-    function redeemUnderlying(uint redeemAmount) external returns (uint);
-    function borrow(uint borrowAmount) external returns (uint);
-    function repayBorrow(uint repayAmount) external returns (uint);
-    function repayBorrowBehalf(address borrower, uint repayAmount) external returns (uint);
-    function liquidateBorrow(address borrower, uint repayAmount, IgnisTokenInterface ignisTokenCollateral) external returns (uint);
-    function sweepToken(EIP20NonStandardInterface token) external;
+    function mint(uint mintAmount) virtual external returns (uint);
+    function redeem(uint redeemTokens) virtual external returns (uint);
+    function redeemUnderlying(uint redeemAmount) virtual external returns (uint);
+    function borrow(uint borrowAmount) virtual external returns (uint);
+    function repayBorrow(uint repayAmount) virtual external returns (uint);
+    function repayBorrowBehalf(address borrower, uint repayAmount) virtual external returns (uint);
+    function liquidateBorrow(address borrower, uint repayAmount, IgnisTokenInterface ignisTokenCollateral) virtual external returns (uint);
+    function sweepToken(EIP20NonStandardInterface token) virtual external;
 
 
     /*** Admin Functions ***/
 
-    function _addReserves(uint addAmount) external returns (uint);
+    function _addReserves(uint addAmount) virtual external returns (uint);
 }
 
 contract IgnisDelegationStorage {
@@ -286,7 +286,7 @@ contract IgnisDelegationStorage {
     address public implementation;
 }
 
-contract IgnisDelegatorInterface is IgnisDelegationStorage {
+abstract contract IgnisDelegatorInterface is IgnisDelegationStorage {
     /**
      * @notice Emitted when implementation is changed
      */
@@ -298,19 +298,19 @@ contract IgnisDelegatorInterface is IgnisDelegationStorage {
      * @param allowResign Flag to indicate whether to call _resignImplementation on the old implementation
      * @param becomeImplementationData The encoded bytes data to be passed to _becomeImplementation
      */
-    function _setImplementation(address implementation_, bool allowResign, bytes memory becomeImplementationData) public;
+    function _setImplementation(address implementation_, bool allowResign, bytes memory becomeImplementationData) virtual public;
 }
 
-contract IgnisDelegateInterface is IgnisDelegationStorage {
+abstract contract IgnisDelegateInterface is IgnisDelegationStorage {
     /**
      * @notice Called by the delegator on a delegate to initialize it for duty
      * @dev Should revert if any issues arise which make it unfit for delegation
      * @param data The encoded bytes data for any initialization
      */
-    function _becomeImplementation(bytes memory data) public;
+    function _becomeImplementation(bytes memory data) virtual public;
 
     /**
      * @notice Called by the delegator on a delegate to forfeit its responsibility
      */
-    function _resignImplementation() public;
+    function _resignImplementation() virtual public;
 }

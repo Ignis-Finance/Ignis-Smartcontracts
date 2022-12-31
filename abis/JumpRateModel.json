@@ -1,0 +1,13 @@
+[
+  "constructor(uint256,uint256,uint256,uint256)",
+  "event NewInterestParams(uint256,uint256,uint256,uint256)",
+  "function baseRatePerTimestamp() view returns (uint256)",
+  "function getBorrowRate(uint256,uint256,uint256) view returns (uint256)",
+  "function getSupplyRate(uint256,uint256,uint256,uint256) view returns (uint256)",
+  "function isInterestRateModel() view returns (bool)",
+  "function jumpMultiplierPerTimestamp() view returns (uint256)",
+  "function kink() view returns (uint256)",
+  "function multiplierPerTimestamp() view returns (uint256)",
+  "function timestampsPerYear() view returns (uint256)",
+  "function utilizationRate(uint256,uint256,uint256) pure returns (uint256)"
+]

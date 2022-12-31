@@ -1,0 +1,12 @@
+[
+  "function _addReserves(uint256) returns (uint256)",
+  "function borrow(uint256) returns (uint256)",
+  "function liquidateBorrow(address,uint256,address) returns (uint256)",
+  "function mint(uint256) returns (uint256)",
+  "function redeem(uint256) returns (uint256)",
+  "function redeemUnderlying(uint256) returns (uint256)",
+  "function repayBorrow(uint256) returns (uint256)",
+  "function repayBorrowBehalf(address,uint256) returns (uint256)",
+  "function sweepToken(address)",
+  "function underlying() view returns (address)"
+]

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.8.17;
 pragma experimental ABIEncoderV2;
 
 contract Ignis {
@@ -88,8 +88,8 @@ contract Ignis {
      */
     function approve(address spender, uint rawAmount) external returns (bool) {
         uint96 amount;
-        if (rawAmount == uint(-1)) {
-            amount = uint96(-1);
+        if (rawAmount == type(uint128).max) {
+            amount = type(uint96).max;
         } else {
             amount = safe96(rawAmount, "Ignis::approve: amount exceeds 96 bits");
         }
@@ -112,8 +112,8 @@ contract Ignis {
      */
     function permit(address owner, address spender, uint rawAmount, uint deadline, uint8 v, bytes32 r, bytes32 s) external {
         uint96 amount;
-        if (rawAmount == uint(-1)) {
-            amount = uint96(-1);
+        if (rawAmount == type(uint256).max) {
+            amount = type(uint96).max;
         } else {
             amount = safe96(rawAmount, "Ignis::permit: amount exceeds 96 bits");
         }
@@ -124,7 +124,7 @@ contract Ignis {
         address signatory = ecrecover(digest, v, r, s);
         require(signatory != address(0), "Ignis::permit: invalid signature");
         require(signatory == owner, "Ignis::permit: unauthorized");
-        require(now <= deadline, "Ignis::permit: signature expired");
+        require(block.timestamp <= deadline, "Ignis::permit: signature expired");
 
         allowances[owner][spender] = amount;
 
@@ -164,7 +164,7 @@ contract Ignis {
         uint96 spenderAllowance = allowances[src][spender];
         uint96 amount = safe96(rawAmount, "Ignis::approve: amount exceeds 96 bits");
 
-        if (spender != src && spenderAllowance != uint96(-1)) {
+        if (spender != src && spenderAllowance != type(uint96).max) {
             uint96 newAllowance = sub96(spenderAllowance, amount, "Ignis::transferFrom: transfer amount exceeds spender allowance");
             allowances[src][spender] = newAllowance;
 
@@ -199,7 +199,7 @@ contract Ignis {
         address signatory = ecrecover(digest, v, r, s);
         require(signatory != address(0), "Ignis::delegateBySig: invalid signature");
         require(nonce == nonces[signatory]++, "Ignis::delegateBySig: invalid nonce");
-        require(now <= expiry, "Ignis::delegateBySig: signature expired");
+        require(block.timestamp <= expiry, "Ignis::delegateBySig: signature expired");
         return _delegate(signatory, delegatee);
     }
 
@@ -327,7 +327,7 @@ contract Ignis {
         return a - b;
     }
 
-    function getChainId() internal pure returns (uint) {
+    function getChainId() internal view returns (uint) {
         uint256 chainId;
         assembly { chainId := chainid() }
         return chainId;

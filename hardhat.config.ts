@@ -10,7 +10,7 @@ import "hardhat-abi-exporter";
 dotenv.config();
 
 const config: HardhatUserConfig = {
-  solidity: "0.5.17",
+  solidity: "0.8.17",
   networks: {
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
@@ -56,6 +56,12 @@ const config: HardhatUserConfig = {
     spacing: 2,
     pretty: true,
     except: [":IERC20$"],
+  },
+  paths: {
+    sources: "./contracts/lending",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts",
   },
 };
 

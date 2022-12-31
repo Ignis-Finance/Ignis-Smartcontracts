@@ -1,0 +1,5 @@
+[
+  "function _becomeImplementation(bytes)",
+  "function _resignImplementation()",
+  "function implementation() view returns (address)"
+]

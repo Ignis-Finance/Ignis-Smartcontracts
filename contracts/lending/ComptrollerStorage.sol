@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisToken.sol";
 import "./PriceOracle.sol";

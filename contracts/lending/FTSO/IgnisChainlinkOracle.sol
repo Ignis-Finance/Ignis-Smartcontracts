@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "../PriceOracle.sol";
 import "../IgnisErc20.sol";
@@ -20,7 +20,7 @@ contract IgnisFTSOOracle is PriceOracle {
         admin = msg.sender;
     }
 
-    function getUnderlyingPrice(IgnisToken ignisToken) public view returns (uint) {
+    function getUnderlyingPrice(IgnisToken ignisToken) override public view returns (uint) {
         string memory symbol = ignisToken.symbol();
         if (compareStrings(symbol, "ignisFLR")) {
             return getFtsoPrice(getFeed(symbol));

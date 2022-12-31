@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisToken.sol";
 import "./ErrorReporter.sol";
@@ -114,7 +114,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param ignisTokens The list of addresses of the ignisToken markets to be enabled
      * @return Success indicator for whether each corresponding market was entered
      */
-    function enterMarkets(address[] memory ignisTokens) public returns (uint[] memory) {
+    function enterMarkets(address[] memory ignisTokens) override public returns (uint[] memory) {
         uint len = ignisTokens.length;
 
         uint[] memory results = new uint[](len);
@@ -166,7 +166,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param ignisTokenAddress The address of the asset to be removed
      * @return Whether or not the account successfully exited the market
      */
-    function exitMarket(address ignisTokenAddress) external returns (uint) {
+    function exitMarket(address ignisTokenAddress) override external returns (uint) {
         IgnisToken ignisToken = IgnisToken(ignisTokenAddress);
         /* Get sender tokensHeld and amountOwed underlying from the ignisToken */
         (uint oErr, uint tokensHeld, uint amountOwed, ) = ignisToken.getAccountSnapshot(msg.sender);
@@ -211,7 +211,8 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         // copy last item in list to location of item to be removed, reduce length by 1
         IgnisToken[] storage storedList = accountAssets[msg.sender];
         storedList[assetIndex] = storedList[storedList.length - 1];
-        storedList.length--;
+        storedList.pop();
+        // storedList.length--;
 
         emit MarketExited(ignisToken, msg.sender);
 
@@ -227,7 +228,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param mintAmount The amount of underlying being supplied to the market in exchange for tokens
      * @return 0 if the mint is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
      */
-    function mintAllowed(address ignisToken, address minter, uint mintAmount) external returns (uint) {
+    function mintAllowed(address ignisToken, address minter, uint mintAmount) override external returns (uint) {
         // Pausing is a very serious situation - we revert to sound the alarms
         require(!mintGuardianPaused[ignisToken], "mint is paused");
 
@@ -250,7 +251,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param actualMintAmount The amount of the underlying asset being minted
      * @param mintTokens The number of tokens being minted
      */
-    function mintVerify(address ignisToken, address minter, uint actualMintAmount, uint mintTokens) external {
+    function mintVerify(address ignisToken, address minter, uint actualMintAmount, uint mintTokens) override external {
         // Shh - currently unused
         ignisToken;
         minter;
@@ -270,7 +271,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param redeemTokens The number of ignisTokens to exchange for the underlying asset in the market
      * @return 0 if the redeem is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
      */
-    function redeemAllowed(address ignisToken, address redeemer, uint redeemTokens) external returns (uint) {
+    function redeemAllowed(address ignisToken, address redeemer, uint redeemTokens) override external returns (uint) {
         uint allowed = redeemAllowedInternal(ignisToken, redeemer, redeemTokens);
         if (allowed != uint(Error.NO_ERROR)) {
             return allowed;
@@ -311,7 +312,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param redeemAmount The amount of the underlying asset being redeemed
      * @param redeemTokens The number of tokens being redeemed
      */
-    function redeemVerify(address ignisToken, address redeemer, uint redeemAmount, uint redeemTokens) external {
+    function redeemVerify(address ignisToken, address redeemer, uint redeemAmount, uint redeemTokens) override external {
         // Shh - currently unused
         ignisToken;
         redeemer;
@@ -329,7 +330,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param borrowAmount The amount of underlying the account would borrow
      * @return 0 if the borrow is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
      */
-    function borrowAllowed(address ignisToken, address borrower, uint borrowAmount) external returns (uint) {
+    function borrowAllowed(address ignisToken, address borrower, uint borrowAmount) override external returns (uint) {
         // Pausing is a very serious situation - we revert to sound the alarms
         require(!borrowGuardianPaused[ignisToken], "borrow is paused");
 
@@ -359,7 +360,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         uint borrowCap = borrowCaps[ignisToken];
         // Borrow cap of 0 corresponds to unlimited borrowing
         if (borrowCap != 0) {
-            uint totalBorrows = ignisToken(ignisToken).totalBorrows();
+            uint totalBorrows = IgnisToken(ignisToken).totalBorrows();
             uint nextTotalBorrows = add_(totalBorrows, borrowAmount);
             require(nextTotalBorrows < borrowCap, "market borrow cap reached");
         }
@@ -385,7 +386,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param borrower The address borrowing the underlying
      * @param borrowAmount The amount of the underlying asset requested to borrow
      */
-    function borrowVerify(address ignisToken, address borrower, uint borrowAmount) external {
+    function borrowVerify(address ignisToken, address borrower, uint borrowAmount) override external {
         // Shh - currently unused
         ignisToken;
         borrower;
@@ -409,7 +410,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         address ignisToken,
         address payer,
         address borrower,
-        uint repayAmount) external returns (uint) {
+        uint repayAmount) override external returns (uint) {
         // Shh - currently unused
         payer;
         borrower;
@@ -438,7 +439,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         address payer,
         address borrower,
         uint actualRepayAmount,
-        uint borrowerIndex) external {
+        uint borrowerIndex) override external {
         // Shh - currently unused
         ignisToken;
         payer;
@@ -465,7 +466,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         address ignisTokenCollateral,
         address liquidator,
         address borrower,
-        uint repayAmount) external returns (uint) {
+        uint repayAmount) override external returns (uint) {
         // Shh - currently unused
         liquidator;
 
@@ -506,7 +507,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         address liquidator,
         address borrower,
         uint actualRepayAmount,
-        uint seizeTokens) external {
+        uint seizeTokens) override external {
         // Shh - currently unused
         ignisTokenBorrowed;
         ignisTokenCollateral;
@@ -534,7 +535,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         address ignisTokenBorrowed,
         address liquidator,
         address borrower,
-        uint seizeTokens) external returns (uint) {
+        uint seizeTokens) override external returns (uint) {
         // Pausing is a very serious situation - we revert to sound the alarms
         require(!seizeGuardianPaused, "seize is paused");
 
@@ -569,7 +570,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         address ignisTokenBorrowed,
         address liquidator,
         address borrower,
-        uint seizeTokens) external {
+        uint seizeTokens) override external {
         // Shh - currently unused
         ignisTokenCollateral;
         ignisTokenBorrowed;
@@ -591,7 +592,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param transferTokens The number of ignisTokens to transfer
      * @return 0 if the transfer is allowed, otherwise a semi-opaque error code (See ErrorReporter.sol)
      */
-    function transferAllowed(address ignisToken, address src, address dst, uint transferTokens) external returns (uint) {
+    function transferAllowed(address ignisToken, address src, address dst, uint transferTokens) override external returns (uint) {
         // Pausing is a very serious situation - we revert to sound the alarms
         require(!transferGuardianPaused, "transfer is paused");
 
@@ -616,7 +617,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param dst The account which receives the tokens
      * @param transferTokens The number of ignisTokens to transfer
      */
-    function transferVerify(address ignisToken, address src, address dst, uint transferTokens) external {
+    function transferVerify(address ignisToken, address src, address dst, uint transferTokens) override external {
         // Shh - currently unused
         ignisToken;
         src;
@@ -656,7 +657,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      *          account shortfall below collateral requirements)
      */
     function getAccountLiquidity(address account) public view returns (uint, uint, uint) {
-        (Error err, uint liquidity, uint shortfall) = getHypotheticalAccountLiquidityInternal(account, IgnisToken(0), 0, 0);
+        (Error err, uint liquidity, uint shortfall) = getHypotheticalAccountLiquidityInternal(account, IgnisToken(address(0)), 0, 0);
 
         return (uint(err), liquidity, shortfall);
     }
@@ -668,7 +669,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      *          account shortfall below collateral requirements)
      */
     function getAccountLiquidityInternal(address account) internal view returns (Error, uint, uint) {
-        return getHypotheticalAccountLiquidityInternal(account, IgnisToken(0), 0, 0);
+        return getHypotheticalAccountLiquidityInternal(account, IgnisToken(address(0)), 0, 0);
     }
 
     /**
@@ -768,7 +769,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @param actualRepayAmount The amount of ignisTokenBorrowed underlying to convert into ignisTokenCollateral tokens
      * @return (errorCode, number of ignisTokenCollateral tokens to be seized in a liquidation)
      */
-    function liquidateCalculateSeizeTokens(address ignisTokenBorrowed, address ignisTokenCollateral, uint actualRepayAmount) external view returns (uint, uint) {
+    function liquidateCalculateSeizeTokens(address ignisTokenBorrowed, address ignisTokenCollateral, uint actualRepayAmount) override external view returns (uint, uint) {
         /* Read oracle prices for borrowed and collateral markets */
         uint priceBorrowedMantissa = oracle.getUnderlyingPrice(IgnisToken(ignisTokenBorrowed));
         uint priceCollateralMantissa = oracle.getUnderlyingPrice(IgnisToken(ignisTokenCollateral));
@@ -923,7 +924,11 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
         ignisToken.isIgnisToken(); // Sanity check to make sure its really a IgnisToken
 
         // Note that isIgnised is not in active use anymore
-        markets[address(ignisToken)] = Market({isListed: true, isIgnised: false, collateralFactorMantissa: 0});
+        Market storage newMarket = markets[address(ignisToken)];
+        newMarket.isListed = true;
+        newMarket.isIgnised = false;
+        newMarket.collateralFactorMantissa = 0;
+        // markets[address(ignisToken)] = Market({isListed: true, isIgnised: false, collateralFactorMantissa: 0});
 
         _addMarketInternal(address(ignisToken));
 
@@ -1281,7 +1286,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
      * @dev Note: If there is not enough IGNIS/FLR, we do not perform the transfer all.
      * @param user The address of the user to transfer FLR to
      * @param amount The amount of FLR to (possibly) transfer
-     * @return The amount of FLR which was NOT transferred to the user
+     * Return The amount of FLR which was NOT transferred to the user
      */
     function grantRewardInternal(uint8 rewardType, address payable user, uint amount) internal {
         if (rewardType == 0) {
@@ -1296,7 +1301,7 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
             uint flrRemaining = address(this).balance;
             if (amount > 0 && amount <= flrRemaining) {
                 rewardAccrued[rewardType][user] = 0;
-                (bool success, ) = user.call.value(amount).gas(4029)("");
+                (bool success, ) = user.call{value:amount, gas:4029}("");
                 require(success, "Transfer failed.");
                 return;
             }
@@ -1357,6 +1362,6 @@ contract Comptroller is ComptrollerVXStorage, ComptrollerInterface, ComptrollerE
     /**
      * @notice payable function needed to receive FLR
      */
-    function () payable external {
+    receive() payable external {
     }
 }

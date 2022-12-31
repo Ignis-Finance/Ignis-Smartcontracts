@@ -1,8 +1,8 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisToken.sol";
 
-contract PriceOracle {
+abstract contract PriceOracle {
     /// @notice Indicator that this is a PriceOracle contract (for inspection)
     bool public constant isPriceOracle = true;
 
@@ -12,5 +12,5 @@ contract PriceOracle {
       * @return The underlying asset price mantissa (scaled by 1e18).
       *  Zero means the price is unavailable.
       */
-    function getUnderlyingPrice(IgnisToken ignisToken) external view returns (uint);
+    function getUnderlyingPrice(IgnisToken ignisToken) virtual external view returns (uint);
 }

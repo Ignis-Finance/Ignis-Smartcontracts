@@ -1,0 +1,20 @@
+[
+  "function borrowAllowed(address,address,uint256) returns (uint256)",
+  "function borrowVerify(address,address,uint256)",
+  "function enterMarkets(address[]) returns (uint256[])",
+  "function exitMarket(address) returns (uint256)",
+  "function isComptroller() view returns (bool)",
+  "function liquidateBorrowAllowed(address,address,address,address,uint256) returns (uint256)",
+  "function liquidateBorrowVerify(address,address,address,address,uint256,uint256)",
+  "function liquidateCalculateSeizeTokens(address,address,uint256) view returns (uint256, uint256)",
+  "function mintAllowed(address,address,uint256) returns (uint256)",
+  "function mintVerify(address,address,uint256,uint256)",
+  "function redeemAllowed(address,address,uint256) returns (uint256)",
+  "function redeemVerify(address,address,uint256,uint256)",
+  "function repayBorrowAllowed(address,address,address,uint256) returns (uint256)",
+  "function repayBorrowVerify(address,address,address,uint256,uint256)",
+  "function seizeAllowed(address,address,address,address,uint256) returns (uint256)",
+  "function seizeVerify(address,address,address,address,uint256)",
+  "function transferAllowed(address,address,address,uint256) returns (uint256)",
+  "function transferVerify(address,address,address,uint256)"
+]

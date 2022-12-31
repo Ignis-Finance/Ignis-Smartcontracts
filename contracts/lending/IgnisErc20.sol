@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisToken.sol";
 
@@ -40,7 +40,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param mintAmount The amount of the underlying asset to supply
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function mint(uint mintAmount) external returns (uint) {
+    function mint(uint mintAmount) override external returns (uint) {
         (uint err,) = mintInternal(mintAmount);
         return err;
     }
@@ -51,7 +51,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param redeemTokens The number of ignisTokens to redeem into underlying
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function redeem(uint redeemTokens) external returns (uint) {
+    function redeem(uint redeemTokens) override external returns (uint) {
         return redeemInternal(redeemTokens);
     }
 
@@ -61,7 +61,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param redeemAmount The amount of underlying to redeem
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function redeemUnderlying(uint redeemAmount) external returns (uint) {
+    function redeemUnderlying(uint redeemAmount) override external returns (uint) {
         return redeemUnderlyingInternal(redeemAmount);
     }
 
@@ -70,7 +70,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
       * @param borrowAmount The amount of the underlying asset to borrow
       * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
       */
-    function borrow(uint borrowAmount) external returns (uint) {
+    function borrow(uint borrowAmount) override external returns (uint) {
         return borrowInternal(borrowAmount);
     }
 
@@ -79,7 +79,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param repayAmount The amount to repay
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function repayBorrow(uint repayAmount) external returns (uint) {
+    function repayBorrow(uint repayAmount) override external returns (uint) {
         (uint err,) = repayBorrowInternal(repayAmount);
         return err;
     }
@@ -90,7 +90,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param repayAmount The amount to repay
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function repayBorrowBehalf(address borrower, uint repayAmount) external returns (uint) {
+    function repayBorrowBehalf(address borrower, uint repayAmount) override external returns (uint) {
         (uint err,) = repayBorrowBehalfInternal(borrower, repayAmount);
         return err;
     }
@@ -103,7 +103,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param ignisTokenCollateral The market in which to seize collateral from the borrower
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function liquidateBorrow(address borrower, uint repayAmount, IgnisTokenInterface ignisTokenCollateral) external returns (uint) {
+    function liquidateBorrow(address borrower, uint repayAmount, IgnisTokenInterface ignisTokenCollateral) override external returns (uint) {
         (uint err,) = liquidateBorrowInternal(borrower, repayAmount, ignisTokenCollateral);
         return err;
     }
@@ -112,7 +112,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @notice A public function to sweep accidental ERC-20 transfers to this contract. Tokens are sent to admin (timelock)
      * @param token The address of the ERC-20 token to sweep
      */
-    function sweepToken(EIP20NonStandardInterface token) external {
+    function sweepToken(EIP20NonStandardInterface token)override external {
     	require(address(token) != underlying, "IgnisErc20::sweepToken: can not sweep underlying token");
     	uint256 balance = token.balanceOf(address(this));
     	token.transfer(admin, balance);
@@ -123,7 +123,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @param addAmount The amount fo underlying token to add as reserves
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
-    function _addReserves(uint addAmount) external returns (uint) {
+    function _addReserves(uint addAmount) override external returns (uint) {
         return _addReservesInternal(addAmount);
     }
 
@@ -134,7 +134,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      * @dev This excludes the value of the current message, if any
      * @return The quantity of underlying tokens owned by this contract
      */
-    function getCashPrior() internal view returns (uint) {
+    function getCashPrior() override internal view returns (uint) {
         EIP20Interface token = EIP20Interface(underlying);
         return token.balanceOf(address(this));
     }
@@ -148,7 +148,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
      *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
      */
-    function doTransferIn(address from, uint amount) internal returns (uint) {
+    function doTransferIn(address from, uint amount) override internal returns (uint) {
         EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
         uint balanceBefore = EIP20Interface(underlying).balanceOf(address(this));
         token.transferFrom(from, address(this), amount);
@@ -184,7 +184,7 @@ contract IgnisErc20 is IgnisToken, IgnisErc20Interface {
      *      Note: This wrapper safely handles non-standard ERC-20 tokens that do not return a value.
      *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
      */
-    function doTransferOut(address payable to, uint amount) internal {
+    function doTransferOut(address payable to, uint amount) override internal {
         EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
         token.transfer(to, amount);
 

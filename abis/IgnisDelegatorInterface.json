@@ -1,0 +1,5 @@
+[
+  "event NewImplementation(address,address)",
+  "function _setImplementation(address,bool,bytes)",
+  "function implementation() view returns (address)"
+]

@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./IgnisErc20.sol";
 
@@ -16,7 +16,7 @@ contract IgnisErc20Delegate is IgnisErc20, IgnisDelegateInterface {
      * @notice Called by the delegator on a delegate to initialize it for duty
      * @param data The encoded bytes data for any initialization
      */
-    function _becomeImplementation(bytes memory data) public {
+    function _becomeImplementation(bytes memory data) override public {
         // Shh -- currently unused
         data;
 
@@ -31,7 +31,7 @@ contract IgnisErc20Delegate is IgnisErc20, IgnisDelegateInterface {
     /**
      * @notice Called by the delegator on a delegate to forfeit its responsibility
      */
-    function _resignImplementation() public {
+    function _resignImplementation() override public {
         // Shh -- we don't ever want this hook to be marked pure
         if (false) {
             implementation = address(0);

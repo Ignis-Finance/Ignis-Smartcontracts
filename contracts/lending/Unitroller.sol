@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.8.17;
 
 import "./ErrorReporter.sol";
 import "./ComptrollerStorage.sol";
@@ -132,17 +132,22 @@ contract Unitroller is UnitrollerAdminStorage, ComptrollerErrorReporter {
      * It returns to the external caller whatever the implementation returns
      * or forwards reverts.
      */
-    function () payable external {
+    receive() payable external {
         // delegate all other functions to current implementation
-        (bool success, ) = comptrollerImplementation.delegatecall(msg.data);
+        bool success = _payableSubFunc();
+        // (bool success, ) = comptrollerImplementation.delegatecall(msg.data);
 
         assembly {
               let free_mem_ptr := mload(0x40)
-              returndatacopy(free_mem_ptr, 0, returndatasize)
+              returndatacopy(free_mem_ptr, 0, returndatasize())
 
               switch success
-              case 0 { revert(free_mem_ptr, returndatasize) }
-              default { return(free_mem_ptr, returndatasize) }
+              case 0 { revert(free_mem_ptr, returndatasize()) }
+              default { return(free_mem_ptr, returndatasize()) }
         }
+    }
+    function _payableSubFunc() private returns(bool) {
+      (bool success, ) = comptrollerImplementation.delegatecall(msg.data);
+      return success;
     }
 }
